@@ -24,4 +24,6 @@ Tscan* tscan_init(const char* hostname);
 
 void tscan_close(Tscan* tscan);
 
+void tscan_lookup(Tscan* tscan);
+
 #endif

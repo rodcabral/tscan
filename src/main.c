@@ -12,7 +12,9 @@ int main(int argc, char** argv) {
 
     printf("Tscan 1.0 (BETA)\n\n");
 
-    printf("Scanning %s\n", hostname);
+    printf("Scanning %s\n\n", hostname);
+
+    tscan_lookup(tscan);
 
     tscan_close(tscan);
 
