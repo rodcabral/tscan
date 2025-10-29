@@ -13,7 +13,11 @@
 #include <unistd.h>
 
 typedef struct {
+    struct sockaddr_in* ipv4;
+    struct sockaddr_in6* ipv6;
+    char ipstr[INET6_ADDRSTRLEN];
 
+    struct addrinfo* addr;
 } Tscan;
 
 Tscan* tscan_init(const char* hostname);
