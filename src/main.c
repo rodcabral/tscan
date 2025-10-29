@@ -1,4 +1,4 @@
-#include <stdio.h>
+#include "../include/tscan.h"
 
 int main(int argc, char** argv) {
     if(argc < 2) {
@@ -8,9 +8,13 @@ int main(int argc, char** argv) {
     
     const char* hostname = argv[1];
 
+    Tscan* tscan = tscan_init(hostname);
+
     printf("Tscan 1.0 (BETA)\n\n");
 
     printf("Scanning %s\n", hostname);
+
+    tscan_close(tscan);
 
     return 0;
 }
