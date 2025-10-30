@@ -26,4 +26,6 @@ void tscan_close(Tscan* tscan);
 
 void tscan_lookup(Tscan* tscan);
 
+int tscan_socket(int domain, int type, int protocol);
+
 #endif

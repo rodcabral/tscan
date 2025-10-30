@@ -54,6 +54,31 @@ void tscan_lookup(Tscan* tscan) {
     printf("\n");
 }
 
+int tscan_socket(int domain, int type, int protocol) {
+    int sockfd = socket(domain, type, protocol);
+
+    if(sockfd < 0) {
+        fprintf(stderr, "ERROR: socket error\n");
+        exit(EXIT_FAILURE);
+    }
+
+    struct timeval tv;
+    tv.tv_sec = 2;
+    tv.tv_usec = 0;
+
+    if(setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv)) < 0) {
+        fprintf(stderr, "ERROR: setsockopt error\n");
+        exit(EXIT_FAILURE);
+    }
+
+    if(setsockopt(sockfd, SOL_SOCKET, SO_SNDTIMEO, &tv, sizeof(tv)) < 0) {
+        fprintf(stderr, "ERROR: setsockopt error\n");
+        exit(EXIT_FAILURE);
+    }
+
+    return sockfd;
+}
+
 void tscan_close(Tscan* tscan) {
     freeaddrinfo(tscan->addr);
     free(tscan);
