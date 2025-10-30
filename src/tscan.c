@@ -79,6 +79,25 @@ int tscan_socket(int domain, int type, int protocol) {
     return sockfd;
 }
 
+int tscan_connect(Tscan* tscan, int *sockfd, uint16_t port) {
+    if(tscan->ipv4 != NULL) {
+        *sockfd = tscan_socket(AF_INET, SOCK_STREAM, 0);
+
+        tscan->ipv4->sin_port = htons(port);
+        return connect(*sockfd, (struct sockaddr*)tscan->ipv4, sizeof(struct sockaddr_in));
+    }
+
+    if(tscan->ipv6 != NULL) {
+        *sockfd = tscan_socket(AF_INET6, SOCK_STREAM, 0);
+
+        tscan->ipv6->sin6_port = htons(port);
+
+        return connect(*sockfd, (struct sockaddr*)tscan->ipv6, sizeof(struct sockaddr_in6));
+    }
+
+    return -1;
+}
+
 void tscan_close(Tscan* tscan) {
     freeaddrinfo(tscan->addr);
     free(tscan);
