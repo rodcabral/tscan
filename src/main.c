@@ -16,6 +16,8 @@ int main(int argc, char** argv) {
 
     tscan_lookup(tscan);
 
+    tscan_portscan(tscan);
+
     tscan_close(tscan);
 
     return 0;

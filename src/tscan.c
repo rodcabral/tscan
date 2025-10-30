@@ -98,6 +98,21 @@ int tscan_connect(Tscan* tscan, int *sockfd, uint16_t port) {
     return -1;
 }
 
+void tscan_portscan(Tscan* tscan) {
+    printf("Looking for open ports...\n");
+    uint16_t max_ports = 0xFFFF;
+
+    int sockfd;
+    
+    for(int port = 0; port < max_ports; ++port) {
+        int conn = tscan_connect(tscan, &sockfd, port);
+        if(conn == 0) {
+            printf("\e[34m%s:\e[00m PORT %d is open\n", tscan->ipstr, port);
+        }
+        close(sockfd);
+    }
+}
+
 void tscan_close(Tscan* tscan) {
     freeaddrinfo(tscan->addr);
     free(tscan);

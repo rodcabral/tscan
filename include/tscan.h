@@ -30,4 +30,6 @@ int tscan_socket(int domain, int type, int protocol);
 
 int tscan_connect(Tscan* tscan, int *sockfd, uint16_t port);
 
+void tscan_portscan(Tscan* tscan);
+
 #endif
