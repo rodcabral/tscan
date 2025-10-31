@@ -133,12 +133,15 @@ void tscan_portscan(Tscan* tscan) {
     uint16_t max_ports = 0xFFFF;
 
     int sockfd;
-    
-    for(int port = 0; port < max_ports; ++port) {
-        int conn = tscan_connect(tscan, &sockfd, port);
+
+    for(int i = 0; i < tscan->common.max_common; ++i) {
+        uint16_t current_port = tscan->common.ports[i];
+        int conn = tscan_connect(tscan, &sockfd, current_port);
+
         if(conn == 0) {
-            printf("\e[34m%s:\e[00m PORT %d is open\n", tscan->ipstr, port);
+            printf("\e[34m%s:\e[00m PORT %d is open\n", tscan->ipstr, current_port);
         }
+
         close(sockfd);
     }
 }
