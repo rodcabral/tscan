@@ -33,6 +33,12 @@ int main(int argc, char** argv) {
 
     Tscan* tscan = tscan_init(hostname);
 
+    for(int i = 0; i < argc; ++i) {
+        if(strncmp(argv[i], "--all", 6) == 0) {
+            tscan->scan_all = true;
+        }
+    }
+
     printf("Tscan 1.0 (BETA)\n\n");
 
     printf("Scanning %s\n\n", hostname);

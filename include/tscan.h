@@ -25,6 +25,8 @@ typedef struct {
 
     Common common;
 
+    bool scan_all;
+
     struct addrinfo* addr;
 } Tscan;
 

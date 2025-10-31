@@ -3,6 +3,8 @@
 Tscan* tscan_init(const char* hostname [[maybe_unused]]) {
     Tscan* tscan = malloc(sizeof(Tscan));
 
+    tscan->scan_all = false;
+
     tscan->ipv4 = NULL;
     tscan->ipv6 = NULL;
 
@@ -130,12 +132,23 @@ int tscan_connect(Tscan* tscan, int *sockfd, uint16_t port) {
 
 void tscan_portscan(Tscan* tscan) {
     printf("Looking for open ports...\n");
-    uint16_t max_ports = 0xFFFF;
+
+    uint16_t current_port;
+    uint16_t ports = tscan->common.max_common;
+
+    if(tscan->scan_all) {
+        ports = 0xFFFF;
+    }
 
     int sockfd;
 
-    for(int i = 0; i < tscan->common.max_common; ++i) {
-        uint16_t current_port = tscan->common.ports[i];
+    for(int i = 0; i < ports; ++i) {
+        current_port = tscan->common.ports[i];
+
+        if(tscan->scan_all) {
+            current_port = i;
+        }
+
         int conn = tscan_connect(tscan, &sockfd, current_port);
 
         if(conn == 0) {
