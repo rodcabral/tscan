@@ -16,10 +16,17 @@ void load_logo() {
 }
 
 int main(int argc, char** argv) {
-    if(argc < 2) {
+    if(argc < 2 || strncmp(argv[1], "--help", 7) == 0 || strncmp(argv[1], "-h", 3) == 0) {
         load_logo();
-        fprintf(stderr, "USAGE: tscan [target]\n");
-        return -1;
+        printf("USAGE: tscan [Target] [Options]\n\n");
+
+        printf("[Target]\n");
+        printf("The target can be hostnames or IP addresses\n");
+        printf("Ex: scanme.org, localhost, ::1, 192.168.0.1\n");
+
+        if(argc < 2) return -1;
+
+        return 0;
     }
     
     const char* hostname = argv[1];
