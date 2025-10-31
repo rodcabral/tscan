@@ -27,6 +27,8 @@ int main(int argc, char** argv) {
         printf("\n[Options]\n");
         printf("Without any options, tscan will only scan the known ports defined in\n/usr/share/tscan/tscan-common-services and the scan will only occur on the last\nIP address found, giving preference to IPv4.\n\n");
         printf("--all: Scan all ports (1 - 65535)\n");
+        printf("-t [number]: Number of threads to use\n");
+
 
         if(argc < 2) return -1;
 
@@ -40,6 +42,17 @@ int main(int argc, char** argv) {
     for(int i = 0; i < argc; ++i) {
         if(strncmp(argv[i], "--all", 6) == 0) {
             tscan->scan_all = true;
+        }
+
+        if(strncmp(argv[i], "-t", 3) == 0) {
+            char* p;
+            long threads_num = strtol(argv[i + 1], &p, 10);
+            if(*p != '\0' || threads_num > INT_MAX || threads_num < INT_MIN) {
+                fprintf(stderr, "ERROR: invalid thread number!\n");
+                return -1;
+            }
+
+            tscan->max_threads = threads_num;
         }
     }
 

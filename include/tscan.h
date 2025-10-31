@@ -11,6 +11,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <unistd.h>
+#include <pthread.h>
 
 typedef struct {
     char** services;
@@ -27,8 +28,16 @@ typedef struct {
 
     bool scan_all;
 
+    int max_threads;
+
     struct addrinfo* addr;
 } Tscan;
+
+typedef struct {
+    Tscan* tscan;
+    int start;
+    int end;
+} TscanArgs;
 
 Tscan* tscan_init(const char* hostname);
 

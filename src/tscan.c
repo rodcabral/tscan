@@ -4,6 +4,7 @@ Tscan* tscan_init(const char* hostname [[maybe_unused]]) {
     Tscan* tscan = malloc(sizeof(Tscan));
 
     tscan->scan_all = false;
+    tscan->max_threads = 10;
 
     tscan->ipv4 = NULL;
     tscan->ipv6 = NULL;
@@ -130,32 +131,57 @@ int tscan_connect(Tscan* tscan, int *sockfd, uint16_t port) {
     return -1;
 }
 
-void tscan_portscan(Tscan* tscan) {
-    printf("Looking for open ports...\n");
-
+void tscan_portscan_thread(TscanArgs *args) {
     uint16_t current_port;
-    uint16_t ports = tscan->common.max_common;
-
-    if(tscan->scan_all) {
-        ports = 0xFFFF;
-    }
 
     int sockfd;
 
-    for(int i = 0; i < ports; ++i) {
-        current_port = tscan->common.ports[i];
+    for(int port = args->start; port < args->end; ++port) {
+        int conn;
 
-        if(tscan->scan_all) {
-            current_port = i;
+        if(args->tscan->scan_all) {
+            conn = tscan_connect(args->tscan, &sockfd, port);
+            current_port = port;
         }
 
-        int conn = tscan_connect(tscan, &sockfd, current_port);
+        if(!args->tscan->scan_all) {
+            conn = tscan_connect(args->tscan, &sockfd, args->tscan->common.ports[port]);
+            current_port = args->tscan->common.ports[port];
+        }
 
         if(conn == 0) {
-            printf("\e[34m%s:\e[00m PORT %d is open\n", tscan->ipstr, current_port);
+            printf("\e[34m%s:\e[00m PORT %d is open\n", args->tscan->ipstr, current_port);
         }
 
         close(sockfd);
+    }
+}
+
+void tscan_portscan(Tscan* tscan) {
+    printf("Looking for open ports...\n");
+
+    int max_ports = tscan->common.max_common;
+
+    if(tscan->scan_all) max_ports = 0xFFFF;
+
+    pthread_t threads[tscan->max_threads];
+    TscanArgs args[tscan->max_threads];
+
+    int start = 0, end = 0;
+
+    for(int i = 0; i < tscan->max_threads; ++i) {
+        start = end;
+        end = end + (max_ports/tscan->max_threads);
+
+        args[i].tscan = tscan;
+        args[i].start = start;
+        args[i].end = end;
+
+        pthread_create(&threads[i], NULL, (void*)tscan_portscan_thread, (void*)&args[i]);
+    }
+
+    for(int i = 0; i < tscan->max_threads; ++i) {
+        pthread_join(threads[i], NULL);
     }
 }
 
