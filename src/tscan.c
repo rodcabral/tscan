@@ -19,6 +19,36 @@ Tscan* tscan_init(const char* hostname [[maybe_unused]]) {
         exit(EXIT_FAILURE);
     }
 
+    FILE* fptr = fopen("/usr/share/tscan/tscan-common-services", "r");
+
+    if(!fptr) {
+        fprintf(stderr, "ERROR: Could not open /usr/share/tscan/tscan-common-services\n");
+        exit(EXIT_FAILURE);
+    }
+
+    char c;
+    int max_common = 0;
+    while((c = fgetc(fptr)) != EOF) {
+        if(c == '\n') {
+            max_common++;
+        }
+    }
+    fseek(fptr, 0, SEEK_SET);
+
+    tscan->common.max_common = max_common;
+    tscan->common.ports = malloc(sizeof(int) * max_common);
+    tscan->common.services = malloc(sizeof(char*) * max_common);
+
+    char common_service[50];
+    int common_port;
+
+    for(int i = 0; i < max_common; ++i) {
+        tscan->common.services[i] = malloc(sizeof(char) * 50);
+        fscanf(fptr, "%s %d", common_service, &common_port);
+        tscan->common.ports[i] = common_port;
+        strncpy(tscan->common.services[i], common_service, 50);
+    }
+
     return tscan;
 }
 
@@ -115,5 +145,13 @@ void tscan_portscan(Tscan* tscan) {
 
 void tscan_close(Tscan* tscan) {
     freeaddrinfo(tscan->addr);
+    
+    for(int i = 0; i < tscan->common.max_common; ++i) {
+        free(tscan->common.services[i]);
+    }
+
+    free(tscan->common.ports);
+    free(tscan->common.services);
+
     free(tscan);
 }

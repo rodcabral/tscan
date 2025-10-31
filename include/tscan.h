@@ -13,9 +13,17 @@
 #include <unistd.h>
 
 typedef struct {
+    char** services;
+    int* ports;
+    int max_common;
+} Common;
+
+typedef struct {
     struct sockaddr_in* ipv4;
     struct sockaddr_in6* ipv6;
     char ipstr[INET6_ADDRSTRLEN];
+
+    Common common;
 
     struct addrinfo* addr;
 } Tscan;
