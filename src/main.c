@@ -24,6 +24,10 @@ int main(int argc, char** argv) {
         printf("The target can be hostnames or IP addresses\n");
         printf("Ex: scanme.org, localhost, ::1, 192.168.0.1\n");
 
+        printf("\n[Options]\n");
+        printf("Without any options, tscan will only scan the known ports defined in\n/usr/share/tscan/tscan-common-services and the scan will only occur on the last\nIP address found, giving preference to IPv4.\n\n");
+        printf("--all: Scan all ports (1 - 65535)\n");
+
         if(argc < 2) return -1;
 
         return 0;
