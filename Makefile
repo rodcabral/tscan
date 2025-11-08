@@ -7,14 +7,15 @@ ALL_HEADERS = $(wildcard ./include/*.h)
 tscan: $(ALL_HEADERS) $(ALL_SOURCE)
 	$(CC) $(DEBUG_FLAGS) $(ALL_SOURCE) -o tscan
 
+uninstall:
+	rm -rf /usr/bin/tscan /usr/share/tscan/
+
 install: $(ALL_HEADERS) $(ALL_SOURCE)
+	make uninstall
 	$(CC) $(RELEASE_FLAGS) $(ALL_SOURCE) -o tscan
 	cp tscan /usr/bin
 	mkdir /usr/share/tscan
 	cp -r ./share/* /usr/share/tscan
-
-uninstall:
-	rm -rf /usr/bin/tscan /usr/share/tscan/
 
 clean:
 	rm -rf tscan
