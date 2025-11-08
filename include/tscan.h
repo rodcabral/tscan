@@ -30,6 +30,9 @@ typedef struct {
 
     int max_threads;
 
+    int open_ports[0xFFFF];
+    int ptop;
+
     struct addrinfo* addr;
 } Tscan;
 

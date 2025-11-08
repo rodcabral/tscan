@@ -1,6 +1,6 @@
 #include "../include/tscan.h"
 
-Tscan* tscan_init(const char* hostname [[maybe_unused]]) {
+Tscan* tscan_init(const char* hostname) {
     Tscan* tscan = malloc(sizeof(Tscan));
 
     tscan->scan_all = false;
@@ -8,6 +8,8 @@ Tscan* tscan_init(const char* hostname [[maybe_unused]]) {
 
     tscan->ipv4 = NULL;
     tscan->ipv6 = NULL;
+
+    tscan->ptop = 0;
 
     struct addrinfo hints;
 
@@ -150,6 +152,7 @@ void tscan_portscan_thread(TscanArgs *args) {
         }
 
         if(conn == 0) {
+            args->tscan->open_ports[args->tscan->ptop++] = current_port;
             printf("\e[34m%s:\e[00m PORT %d is open\n", args->tscan->ipstr, current_port);
         }
 
