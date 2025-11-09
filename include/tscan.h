@@ -12,6 +12,7 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <pthread.h>
+#include <ctype.h>
 
 typedef struct {
     char** services;
@@ -54,6 +55,8 @@ void tscan_lookup(Tscan* tscan);
 int tscan_socket(int domain, int type, int protocol);
 
 int tscan_connect(Tscan* tscan, int *sockfd, uint16_t port);
+
+int tscan_getnameinfo(Tscan* tscan, char* host);
 
 void tscan_portscan(Tscan* tscan);
 

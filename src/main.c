@@ -66,9 +66,14 @@ int main(int argc, char** argv) {
         }
     }
 
-    printf("Tscan 1.0 (BETA)\n\n");
+    printf("Tscan 1.0\n\n");
 
-    printf("Scanning %s\n\n", hostname);
+    char temp_hostname[255];
+    if(isdigit(hostname[0]) && tscan_getnameinfo(tscan, temp_hostname) == 0) {
+        printf("Scanning %s\n\n", temp_hostname);
+    } else {
+        printf("Scanning %s\n\n", hostname);
+    }
 
     tscan_lookup(tscan);
 

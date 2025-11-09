@@ -59,6 +59,20 @@ Tscan* tscan_init(const char* hostname) {
     return tscan;
 }
 
+int tscan_getnameinfo(Tscan* tscan, char* host) {
+    char service[20];
+    if(tscan->addr->ai_family == AF_INET) {
+        tscan->ipv4 = (struct sockaddr_in*)tscan->addr->ai_addr;
+        if(getnameinfo((struct sockaddr*)tscan->ipv4, sizeof(struct sockaddr_in), host, 255, service, 20, 0) == 0) {
+            return 0;
+        }
+    }
+
+    tscan->ipv4 = NULL;
+
+    return -1;
+}
+
 void tscan_lookup(Tscan* tscan) {
     void *addr;
     
