@@ -28,6 +28,7 @@ typedef struct {
     Common common;
 
     bool scan_all;
+    bool silent;
 
     bool save_ports;
     FILE* ports_file;

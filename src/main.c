@@ -27,6 +27,7 @@ int main(int argc, char** argv) {
         printf("\n[Options]\n");
         printf("Without any options, tscan will only scan the known ports defined in\n/usr/share/tscan/tscan-common-services and the scan will only occur on the last\nIP address found, giving preference to IPv4.\n\n");
         printf("--all: Scan all ports (1 - 65535)\n");
+        printf("--silent: Silences all CLI\n");
         printf("-t [number]: Number of threads to use\n");
         printf("-o [filename]: Save all open ports to a file\n");
 
@@ -64,15 +65,21 @@ int main(int argc, char** argv) {
                 exit(EXIT_FAILURE);
             }
         }
+
+        if(strncmp(argv[i], "--silent", 9) == 0) {
+            tscan->silent = true;
+        }
     }
 
-    printf("Tscan 1.0\n\n");
+    if(!tscan->silent) {
+        printf("Tscan 1.0\n\n");
 
-    char temp_hostname[255];
-    if(isdigit(hostname[0]) && tscan_getnameinfo(tscan, temp_hostname) == 0) {
-        printf("Scanning %s\n\n", temp_hostname);
-    } else {
-        printf("Scanning %s\n\n", hostname);
+        char temp_hostname[255];
+        if(isdigit(hostname[0]) && tscan_getnameinfo(tscan, temp_hostname) == 0) {
+            printf("Scanning %s\n\n", temp_hostname);
+        } else {
+            printf("Scanning %s\n\n", hostname);
+        }
     }
 
     tscan_lookup(tscan);

@@ -4,7 +4,7 @@ Tscan* tscan_init(const char* hostname) {
     Tscan* tscan = malloc(sizeof(Tscan));
 
     tscan->scan_all = false;
-    tscan->max_threads = 10;
+    tscan->max_threads = 20;
 
     tscan->ipv4 = NULL;
     tscan->ipv6 = NULL;
@@ -12,6 +12,7 @@ Tscan* tscan_init(const char* hostname) {
     tscan->ptop = 0;
 
     tscan->save_ports = false;
+    tscan->silent = false;
 
     struct addrinfo hints;
 
@@ -78,7 +79,9 @@ void tscan_lookup(Tscan* tscan) {
     
     struct addrinfo* temp = tscan->addr;
 
-    printf("Listing all IP addresses...\n");
+    if(!tscan->silent) {
+        printf("Listing all IP addresses...\n");
+    }
 
     while(temp != NULL) {
         const char* ver_str;
@@ -97,12 +100,16 @@ void tscan_lookup(Tscan* tscan) {
 
         inet_ntop(temp->ai_family, addr, tscan->ipstr, sizeof tscan->ipstr);
 
-        printf("\e[34m%s:\e[36m %s\n\e[00m", ver_str, tscan->ipstr);
+        if(!tscan->silent) {
+            printf("\e[34m%s:\e[36m %s\n\e[00m", ver_str, tscan->ipstr);
+        }
 
         temp = temp->ai_next;
     }
 
-    printf("\n");
+    if(!tscan->silent) {
+        printf("\n");
+    }
 }
 
 int tscan_socket(int domain, int type, int protocol) {
@@ -171,7 +178,9 @@ void tscan_portscan_thread(TscanArgs *args) {
 
         if(conn == 0) {
             tscan->open_ports[tscan->ptop++] = current_port;
-            printf("\e[34m%s:\e[00m PORT %d is open\n", tscan->ipstr, current_port);
+            if(!tscan->silent) {
+                printf("\e[34m%s:\e[00m PORT %d is open\n", tscan->ipstr, current_port);
+            }
         }
 
         close(sockfd);
@@ -192,7 +201,9 @@ void tscan_portscan_thread(TscanArgs *args) {
 }
 
 void tscan_portscan(Tscan* tscan) {
-    printf("Looking for open ports...\n");
+    if(!tscan->silent) {
+        printf("Looking for open ports...\n");
+    }
 
     int max_ports = tscan->common.max_common;
 
@@ -220,30 +231,32 @@ void tscan_portscan(Tscan* tscan) {
 }
 
 void tscan_open_ports(Tscan* tscan) {
-    printf("\nOpen ports: \n");
-    printf("\e[34mPORT\t\e[36mSERVICE\e[00m\n");
-    for(int i = 0; i < tscan->ptop; ++i) {
-        bool is_common = false;
-        printf("\e[34m");
-        if(tscan->open_ports[i] > 9999) {
-            printf("%d   ", tscan->open_ports[i]);
-        } else {
-            printf("%d\t", tscan->open_ports[i]);
-        }
-
-        printf("\e[36m");
-        for(int j = 0; j < tscan->common.max_common; j++) {
-            if(tscan->common.ports[j] == tscan->open_ports[i]) {
-                printf("%s\n", tscan->common.services[j]);
-                is_common = true;
+    if(!tscan->silent) {
+        printf("\nOpen ports: \n");
+        printf("\e[34mPORT\t\e[36mSERVICE\e[00m\n");
+        for(int i = 0; i < tscan->ptop; ++i) {
+            bool is_common = false;
+            printf("\e[34m");
+            if(tscan->open_ports[i] > 9999) {
+                printf("%d   ", tscan->open_ports[i]);
+            } else {
+                printf("%d\t", tscan->open_ports[i]);
             }
-        }
 
-        if(!is_common) {
-            printf("unknown\n");
-        }
+            printf("\e[36m");
+            for(int j = 0; j < tscan->common.max_common; j++) {
+                if(tscan->common.ports[j] == tscan->open_ports[i]) {
+                    printf("%s\n", tscan->common.services[j]);
+                    is_common = true;
+                }
+            }
 
-        printf("\e[00m");
+            if(!is_common) {
+                printf("unknown\n");
+            }
+
+            printf("\e[00m");
+        }
     }
 }
 
