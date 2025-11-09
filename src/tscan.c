@@ -11,6 +11,8 @@ Tscan* tscan_init(const char* hostname) {
 
     tscan->ptop = 0;
 
+    tscan->save_ports = false;
+
     struct addrinfo hints;
 
     memset(&hints, 0, sizeof hints);
@@ -222,6 +224,16 @@ void tscan_open_ports(Tscan* tscan) {
         }
         printf("\e[00m");
     }
+}
+
+void tscan_save_ports(Tscan* tscan) {
+    if(tscan->save_ports) {
+        for(int i = 0; i < tscan->ptop; ++i) {
+            fprintf(tscan->ports_file, "%d\n", tscan->open_ports[i]);
+        }
+    }
+
+    fclose(tscan->ports_file);
 }
 
 void tscan_close(Tscan* tscan) {

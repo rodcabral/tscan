@@ -28,7 +28,7 @@ int main(int argc, char** argv) {
         printf("Without any options, tscan will only scan the known ports defined in\n/usr/share/tscan/tscan-common-services and the scan will only occur on the last\nIP address found, giving preference to IPv4.\n\n");
         printf("--all: Scan all ports (1 - 65535)\n");
         printf("-t [number]: Number of threads to use\n");
-
+        printf("-o [filename]: Save all open ports to a file\n");
 
         if(argc < 2) return -1;
 
@@ -54,6 +54,16 @@ int main(int argc, char** argv) {
 
             tscan->max_threads = threads_num;
         }
+
+        if(strncmp(argv[i], "-o", 3) == 0) {
+            tscan->save_ports = true;
+            tscan->ports_file = fopen(argv[i + 1], "w");
+
+            if(!tscan->ports_file) {
+                fprintf(stderr, "ERROR: could not open %s\n", argv[i+1]);
+                exit(EXIT_FAILURE);
+            }
+        }
     }
 
     printf("Tscan 1.0 (BETA)\n\n");
@@ -65,6 +75,8 @@ int main(int argc, char** argv) {
     tscan_portscan(tscan);
 
     tscan_open_ports(tscan);
+
+    tscan_save_ports(tscan);
 
     tscan_close(tscan);
 

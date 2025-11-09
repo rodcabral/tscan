@@ -28,6 +28,9 @@ typedef struct {
 
     bool scan_all;
 
+    bool save_ports;
+    FILE* ports_file;
+
     int max_threads;
 
     int open_ports[0xFFFF];
@@ -55,5 +58,7 @@ int tscan_connect(Tscan* tscan, int *sockfd, uint16_t port);
 void tscan_portscan(Tscan* tscan);
 
 void tscan_open_ports(Tscan* tscan);
+
+void tscan_save_ports(Tscan* tscan);
 
 #endif
