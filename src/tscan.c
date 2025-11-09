@@ -223,6 +223,7 @@ void tscan_open_ports(Tscan* tscan) {
     printf("\nOpen ports: \n");
     printf("\e[34mPORT\t\e[36mSERVICE\e[00m\n");
     for(int i = 0; i < tscan->ptop; ++i) {
+        bool is_common = false;
         printf("\e[34m");
         if(tscan->open_ports[i] > 9999) {
             printf("%d   ", tscan->open_ports[i]);
@@ -234,8 +235,14 @@ void tscan_open_ports(Tscan* tscan) {
         for(int j = 0; j < tscan->common.max_common; j++) {
             if(tscan->common.ports[j] == tscan->open_ports[i]) {
                 printf("%s\n", tscan->common.services[j]);
+                is_common = true;
             }
         }
+
+        if(!is_common) {
+            printf("unknown\n");
+        }
+
         printf("\e[00m");
     }
 }
