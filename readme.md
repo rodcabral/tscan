@@ -2,7 +2,9 @@
 ░░█░░▀▀█░█░░░█▀█░█░█  
 ░░▀░░▀▀▀░▀▀▀░▀░▀░▀░▀  
 
-Tscan is a multithreaded Port Scanner and DNS Lookup tool.
+Tscan is a multithreaded port scanner and DNS lookup tool.
+
+After install, use ```tscan -h``` for more information.
 
 ## Install
 
