@@ -10,7 +10,7 @@ void load_logo() {
         printf("%c", c);
     }
 
-    printf("\nVersion 1.0 (BETA)\n\n");
+    printf("\nVersion 1.0\n\n");
 
     fclose(fptr);
 }
@@ -48,7 +48,7 @@ int main(int argc, char** argv) {
             char* p;
             long threads_num = strtol(argv[i + 1], &p, 10);
             if(*p != '\0' || threads_num > INT_MAX || threads_num < INT_MIN) {
-                fprintf(stderr, "ERROR: invalid thread number!\n");
+                fprintf(stderr, "ERROR: invalid thread number\n");
                 return -1;
             }
 

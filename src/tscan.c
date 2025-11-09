@@ -231,9 +231,8 @@ void tscan_save_ports(Tscan* tscan) {
         for(int i = 0; i < tscan->ptop; ++i) {
             fprintf(tscan->ports_file, "%d\n", tscan->open_ports[i]);
         }
+        fclose(tscan->ports_file);
     }
-
-    fclose(tscan->ports_file);
 }
 
 void tscan_close(Tscan* tscan) {
