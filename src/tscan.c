@@ -134,6 +134,8 @@ int tscan_connect(Tscan* tscan, int *sockfd, uint16_t port) {
 }
 
 void tscan_portscan_thread(TscanArgs *args) {
+    Tscan* tscan = args->tscan;
+
     uint16_t current_port;
 
     int sockfd;
@@ -141,22 +143,35 @@ void tscan_portscan_thread(TscanArgs *args) {
     for(int port = args->start; port < args->end; ++port) {
         int conn;
 
-        if(args->tscan->scan_all) {
-            conn = tscan_connect(args->tscan, &sockfd, port);
+        if(tscan->scan_all) {
+            conn = tscan_connect(tscan, &sockfd, port);
             current_port = port;
         }
 
-        if(!args->tscan->scan_all) {
-            conn = tscan_connect(args->tscan, &sockfd, args->tscan->common.ports[port]);
-            current_port = args->tscan->common.ports[port];
+        if(!tscan->scan_all) {
+            conn = tscan_connect(tscan, &sockfd, tscan->common.ports[port]);
+            current_port = tscan->common.ports[port];
         }
 
         if(conn == 0) {
-            args->tscan->open_ports[args->tscan->ptop++] = current_port;
-            printf("\e[34m%s:\e[00m PORT %d is open\n", args->tscan->ipstr, current_port);
+            tscan->open_ports[tscan->ptop++] = current_port;
+            printf("\e[34m%s:\e[00m PORT %d is open\n", tscan->ipstr, current_port);
         }
 
         close(sockfd);
+    }
+
+    for(uint16_t i = 0; i < tscan->ptop; ++i) {
+        bool sorted = false;
+        for(uint16_t j = 0; j < tscan->ptop - i - 1; ++j) {
+            if(tscan->open_ports[j] > tscan->open_ports[j + 1]) {
+                uint16_t aux = tscan->open_ports[j];
+                tscan->open_ports[j] = tscan->open_ports[j + 1];
+                tscan->open_ports[j + 1] = aux;
+                sorted = true;
+            }
+        }
+        if(!sorted) break;
     }
 }
 
@@ -185,6 +200,27 @@ void tscan_portscan(Tscan* tscan) {
 
     for(int i = 0; i < tscan->max_threads; ++i) {
         pthread_join(threads[i], NULL);
+    }
+}
+
+void tscan_open_ports(Tscan* tscan) {
+    printf("\nOpen ports: \n");
+    printf("\e[34mPORT\t\e[36mSERVICE\e[00m\n");
+    for(int i = 0; i < tscan->ptop; ++i) {
+        printf("\e[34m");
+        if(tscan->open_ports[i] > 9999) {
+            printf("%d   ", tscan->open_ports[i]);
+        } else {
+            printf("%d\t", tscan->open_ports[i]);
+        }
+
+        printf("\e[36m");
+        for(int j = 0; j < tscan->common.max_common; j++) {
+            if(tscan->common.ports[j] == tscan->open_ports[i]) {
+                printf("%s\n", tscan->common.services[j]);
+            }
+        }
+        printf("\e[00m");
     }
 }
 

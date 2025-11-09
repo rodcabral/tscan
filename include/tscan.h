@@ -54,4 +54,6 @@ int tscan_connect(Tscan* tscan, int *sockfd, uint16_t port);
 
 void tscan_portscan(Tscan* tscan);
 
+void tscan_open_ports(Tscan* tscan);
+
 #endif

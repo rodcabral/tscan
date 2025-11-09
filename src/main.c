@@ -64,6 +64,8 @@ int main(int argc, char** argv) {
 
     tscan_portscan(tscan);
 
+    tscan_open_ports(tscan);
+
     tscan_close(tscan);
 
     return 0;
